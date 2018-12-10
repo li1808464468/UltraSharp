@@ -8,6 +8,8 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 
+
+
 cc.Class({
     extends: cc.Component,
 
@@ -19,6 +21,7 @@ cc.Class({
 
     onLoad () {
         cc.director.getPhysicsManager().enabled = true;
+        cc.log("game");
     },
 
     start () {
@@ -39,7 +42,7 @@ cc.Class({
                 this.touchId = touch.getID();
                 this.tiledLine.active = true;
                 var position = this.node.convertToNodeSpaceAR(touch.getLocation());
-                cc.log("touch x = %f, touch y = %f",position.x,position.y);
+                // cc.log("touch x = %f, touch y = %f",position.x,position.y);
                 this.tiledLine.setPosition(position);
             }
 
@@ -51,12 +54,23 @@ cc.Class({
                 return;
             }
 
-            var state = touch.getLocation().y >= touch.getStartLocation().y ? 1 : -1;
-            var xValue = touch.getLocation().x <= touch.getStartLocation().x ? 1 : -1;
-            var distance = cc.pDistance(touch.getLocation(),touch.getStartLocation());
+            var p1 = this.node.convertToWorldSpaceAR(touch.getLocation());
+            var p2 = this.node.convertToWorldSpaceAR(touch.getStartLocation());
+            var state = p1.y >= p2.y ? 1 : -1;
+            var xValue = p1.x <= p2.x ? 1 : -1;
+            var distance = cc.pDistance(p1,p2);
             this.tiledLine.setContentSize(this.tiledLine.getContentSize().width,distance);
             this.tiledLine.setScaleY(state);
-            this.tiledLine.rotation = Math.cos((touch.getLocation().y -  touch.getStartLocation().y) / distance) / Math.PI * 180;
+
+            var rotation = USGlobal.MathHelp.pPointAngle(p1,p2);
+
+            if (p1.y > p2.y && p1.x < p2.x) {
+                rotation *= -1;
+            } else if (p1.y < p2.y && p1.x > p2.x) {
+                rotation *= -1;
+            }
+            // cc.log("angle = %f rotation = %f",angle,rotation);
+            this.tiledLine.rotation = rotation;
 
         }.bind(this);
 
