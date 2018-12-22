@@ -11564,7 +11564,7 @@ declare module cc {
 		@param worldPoint a point in world coordinates.
 		@param out optional, the receiving point 
 		*/
-		getLocalPoint(worldPoint: Vec2, out: Vec2): Vec2;		
+        getLocalPoint(worldPoint: Vec2, out: Vec2): Vec2;
 		/**
 		!#en
 		Get the world coordinates of a point given the local coordinates.
