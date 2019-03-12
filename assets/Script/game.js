@@ -290,12 +290,12 @@ cc.Class({
                return item;
            }
         });
-        this.ctx.clear();
-        for (let i = 0; i < results.length; i++) {
-            let p = results[i].point;
-            this.ctx.circle(p.x, p.y, 5);
-        }
-        this.ctx.fill();
+        // this.ctx.clear();
+        // for (let i = 0; i < results.length; i++) {
+        //     let p = results[i].point;
+        //     this.ctx.circle(p.x, p.y, 5);
+        // }
+        // this.ctx.fill();
 
         this.r1 = r1;
         this.r2 = r2;
