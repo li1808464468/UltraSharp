@@ -22,6 +22,13 @@ cc.Class({
     },
 
     // LIFE-CYCLE CALLBACKS:
+    onEnable: function () {
+        this.debugDrawFlags = cc.director.getPhysicsManager().debugDrawFlags;
+        cc.director.getPhysicsManager().debugDrawFlags =
+            cc.PhysicsManager.DrawBits.e_jointBit |
+            cc.PhysicsManager.DrawBits.e_shapeBit
+        ;
+    },
 
     onLoad () {
         cc.director.getPhysicsManager().enabled = true;
@@ -32,7 +39,64 @@ cc.Class({
         this.ctx = this.graphicsNode.getComponent(cc.Graphics);
 
         cc.log("game");
+
+        var values = [{num:1},{num:2},{num:3}];
+        var valueTag = values.every(function (item,index,array) {
+            return (item.num > 2);
+        });
+
+        cc.log("value Tag " + valueTag);
+
+        var numbers = values.filter(function (item,index,array) {
+            return (item.num > 2);
+        });
+
+        numbers.forEach(function (item,index,array) {
+            cc.log("item num = " + item.num);
+        });
+
+        var number2 = values.map(function (item,index,array) {
+            item.num += 2;
+            return item;
+        });
+
+        number2.forEach(function (item) {
+            cc.log("item2 num = " + item.num);
+        });
+
+
+        var book = {
+            _year: 2004,
+            edition: 1,
+        };
+
+        Object.defineProperty(book,"year",{
+            // configurable: true,
+
+            get: function() {
+                return this._year;
+            },
+
+            // set: function(newValue) {
+            //     cc.log("设置 new value");
+            //     if (newValue > 2004) {
+            //         this._year = newValue;
+            //         this.edition += newValue - 2004;
+            //     }
+            // },
+
+            // configurable: true,
+
+
+        });
+
+        // book.year = 2005;
+        cc.log("book year = %d",book.year);
+        cc.log(Object.getOwnPropertyDescriptor(book,"year"));
+
+
     },
+
 
     start () {
         this.initData();
@@ -104,6 +168,7 @@ cc.Class({
                 return;
             }
 
+
             this.r2.forEach(r => {
                 r.fraction = 1 - r.fraction;
             });
@@ -162,9 +227,9 @@ cc.Class({
                 let maxPointsResult;
                 for (let j = 0; j < splitResults.length; j++) {
                     let splitResult = splitResults[j];
-                    for (let k = 0; k < splitResults.length; k++) {
-                        if (typeof splitResults[k] === 'number') {
-                            splitResults[k] = collider.points[splitResult[k]];
+                    for (let k = 0; k < splitResult.length; k++) {
+                        if (typeof splitResult[k] === 'number') {
+                            splitResult[k] = collider.points[splitResult[k]];
                         } 
                     }
                     
@@ -207,7 +272,7 @@ cc.Class({
         this.node.on('touchcancel', touchEnd);
     },
 
-    // 查找碰撞点
+    // 查找碰撞点并通过圆形图片绘制
     recalcResults: function () {
         if ( this.touching === false) {
             return;
