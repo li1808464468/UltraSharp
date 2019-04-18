@@ -36,13 +36,13 @@ cc.Class({
     },
 
     enterGame: function (levelId) {
-        let move1 = cc.moveBy(0.15,cc.p(0,cc.director.getWinSize().height));
+        let move1 = cc.moveBy(15,cc.v2(0,cc.winSize.height));
         this.node.runAction(move1);
 
         this.gameLayer.active = true;
-        this.gameLayer.y = -cc.director.getWinSize().height;
+        this.gameLayer.y = -cc.winSize.height;
         let move2 = move1.clone();
-        // let move2 = cc.moveBy(15,cc.p(0,cc.director.getWinSize().height * 0.2));
+        // let move2 = cc.moveBy(15,cc.v2(0,cc.winSize.height * 0.2));
         this.gameLayer.runAction(move2);
         this.gameLayer.getComponent("game").createLevelData(0);
 

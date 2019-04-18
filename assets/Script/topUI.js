@@ -20,7 +20,7 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-        this.closeButton.x = -cc.director.getWinSize().width * 0.5 + this.closeButton.getContentSize().width * 0.5 + 20;
+        this.closeButton.x = -cc.winSize.width * 0.5 + this.closeButton.getContentSize().width * 0.5 + 20;
     },
 
     start () {
@@ -28,12 +28,12 @@ cc.Class({
     },
 
     closeGame: function () {
-        let move1 = cc.moveBy(0.15,cc.p(0,-cc.director.getWinSize().height));
+        let move1 = cc.moveBy(0.15,cc.v2(0,-cc.winSize.height));
         this.mainLayer.runAction(move1);
 
         this.gameLayer.getComponent("game").removeAllCollider();
         this.gameLayer.active = false;
-        this.gameLayer.y = cc.director.getWinSize().height;
+        this.gameLayer.y = cc.winSize.height;
         let move2 = move1.clone();
         this.gameLayer.runAction(move2);
     },

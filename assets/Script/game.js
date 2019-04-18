@@ -30,10 +30,10 @@ cc.Class({
 
     // LIFE-CYCLE CALLBACKS:
     onEnable: function () {
-        // this.debugDrawFlags = cc.director.getPhysicsManager().debugDrawFlags;
-        // cc.director.getPhysicsManager().debugDrawFlags =
-        //     cc.PhysicsManager.DrawBits.e_jointBit |
-        //     cc.PhysicsManager.DrawBits.e_shapeBit;
+        this.debugDrawFlags = cc.director.getPhysicsManager().debugDrawFlags;
+        cc.director.getPhysicsManager().debugDrawFlags =
+            cc.PhysicsManager.DrawBits.e_jointBit |
+            cc.PhysicsManager.DrawBits.e_shapeBit;
 
     },
 
@@ -42,8 +42,8 @@ cc.Class({
 
 
         this.touching = false;
-        this.touchStartPoint = cc.p(cc.Vec2.ZERO);
-        this.touchPoint = cc.p(cc.Vec2.ZERO);
+        this.touchStartPoint = cc.v2(cc.Vec2.ZERO);
+        this.touchPoint = cc.v2(cc.Vec2.ZERO);
         this.ctx = this.graphicsNode.getComponent(cc.Graphics);
 
         var values = [{num:1},{num:2},{num:3}];
@@ -95,6 +95,8 @@ cc.Class({
 
 
 
+
+
     },
 
    
@@ -104,30 +106,17 @@ cc.Class({
         this.addTouchEvent();
 
 
-        this.ctx.clear(true);
-        this.ctx.fillColor = cc.Color.RED;
-
-        let points = [cc.p(0,0),cc.p(0,100),cc.p(100,100),cc.p(100,0)];
-        for (let i = 0; i < points.length; i++) {
-            var nodePosition = points[i];
-            if (i === 0) {
-                this.ctx.moveTo(nodePosition);
-            } else {
-                this.ctx.lineTo(nodePosition);
-            }
-        }
-
-        this.ctx.fill();
-
-
-
         this.tiledLine.setContentSize(this.tiledLine.getContentSize().width,0);
     },
 
     createLevelData: function (id) {
         this.levelData = USGlobal.ConfigData.levelData.get(id);
         this.upPosition = this.node.position;
-        // this.createPhysicsCollider();
+        this.createPhysicsCollider();
+
+
+
+
 
 
 
@@ -210,7 +199,7 @@ cc.Class({
     createPhysicsPolygonCollider: function (node,data) {
         let polygon = node.addComponent(cc.PhysicsPolygonCollider);
         for (let i = 0; i < data.points.length; i++) {
-            polygon.points[i] = cc.p(data.points[i][0],data.points[i][1]);
+            polygon.points[i] = cc.v2(data.points[i][0],data.points[i][1]);
         }
         polygon.apply();
 
@@ -246,9 +235,9 @@ cc.Class({
             var p2 = this.node.convertToWorldSpaceAR(touch.getStartLocation());
             var state = p1.y >= p2.y ? 1 : -1;
             var xValue = p1.x <= p2.x ? 1 : -1;
-            var distance = cc.pDistance(p1,p2);
+            var distance = p1.sub(p2).mag();
             this.tiledLine.setContentSize(this.tiledLine.getContentSize().width,distance);
-            this.tiledLine.setScaleY(state);
+            this.tiledLine.scaleY = state;
 
             var rotation = USGlobal.MathHelp.pPointAngle(p1,p2);
 
@@ -548,7 +537,6 @@ cc.Class({
 
     update (dt) {
 
-        return;
 
         let position = this.node.position;
         if (this.upPosition.x !== position.x || this.upPosition.y !== position.y) {
@@ -570,24 +558,31 @@ cc.Class({
         }
 
 
-        this.ctx.clear(true);
+        this.ctx.clear();
 
         for (let i = 0; i < this.colliderArray.length; i++) {
             let dataArray = this.colliderArray[i].points;
             for (let j = 0; j < dataArray.length; j++) {
-                var worldPosition = this.colliderArray[i].node.convertToWorldSpaceAR(cc.p(dataArray[j].x,dataArray[j].y));
+                var worldPosition = this.colliderArray[i].node.convertToWorldSpaceAR(cc.v2(dataArray[j].x,dataArray[j].y));
                 var nodePosition = this.node.convertToNodeSpaceAR(worldPosition);
-                this.ctx.fillColor = this.colliderArray[i].node.color;
+
+                // this.ctx.fillColor = this.colliderArray[i].node.color;
+                this.ctx.fillColor = cc.Color.RED;
                 if (j === 0) {
-                    this.ctx.moveTo(nodePosition);
+                    this.ctx.moveTo(nodePosition.x,nodePosition.y);
+
                 } else {
-                    this.ctx.lineTo(nodePosition);
+                    this.ctx.lineTo(nodePosition.x,nodePosition.y);
                 }
 
-                this.ctx.fill();
             }
 
+            this.ctx.fill();
+
         }
+
+
+
 
 
 

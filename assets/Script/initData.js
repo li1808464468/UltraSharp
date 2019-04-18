@@ -43,8 +43,8 @@ cc.Class({
                 return;
             }
 
-            for (let i = 0; i < object.length; i++) {
-                USGlobal.ConfigData.levelData.set(object[i].levelId,object[i]);
+            for (let i = 0; i < object.json.length; i++) {
+                USGlobal.ConfigData.levelData.set(object.json[i].levelId,object.json[i]);
             }
 
 
@@ -59,8 +59,8 @@ cc.Class({
                 return;
             }
 
-            for (let i = 0; i < object.length; i++) {
-                USGlobal.ConfigData.terainData.set(object[i].id,object[i]);
+            for (let i = 0; i < object.json.length; i++) {
+                USGlobal.ConfigData.terainData.set(object.json[i].id,object.json[i]);
             }
 
 
@@ -75,8 +75,8 @@ cc.Class({
                 return;
             }
 
-            for (let i = 0; i < object.length; i++) {
-                USGlobal.ConfigData.contentData.set(object[i].id,object[i]);
+            for (let i = 0; i < object.json.length; i++) {
+                USGlobal.ConfigData.contentData.set(object.json[i].id,object.json[i]);
             }
 
 
