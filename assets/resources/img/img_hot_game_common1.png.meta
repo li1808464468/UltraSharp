@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "e23c9701-bb9e-42cb-a8f4-902c5cdb65c0",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "img_hot_game_common1": {
+      "ver": "1.0.3",
+      "uuid": "59d1bd5b-c023-4b07-ac1b-1a7e602552dd",
+      "rawTextureUuid": "e23c9701-bb9e-42cb-a8f4-902c5cdb65c0",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 976,
+      "height": 122,
+      "rawWidth": 976,
+      "rawHeight": 122,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

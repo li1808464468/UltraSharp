@@ -11,57 +11,54 @@
 const EPSILON = 0.1;
 const POINT_SQR_EPSILON = 5;
 
+let TerrainType = cc.Enum({
+    Box: 0,
+    Polygon: 1,
+});
+
+
+
 cc.Class({
     extends: cc.Component,
 
     properties: {
         tiledLine: cc.Node,
-        box: cc.Node,
         graphicsNode: cc.Node,
-
+        debugGraphics: cc.Node,
+        normalSprite: cc.SpriteFrame,
     },
 
     // LIFE-CYCLE CALLBACKS:
     onEnable: function () {
-        this.debugDrawFlags = cc.director.getPhysicsManager().debugDrawFlags;
-        cc.director.getPhysicsManager().debugDrawFlags =
-            cc.PhysicsManager.DrawBits.e_jointBit |
-            cc.PhysicsManager.DrawBits.e_shapeBit
-        ;
+        // this.debugDrawFlags = cc.director.getPhysicsManager().debugDrawFlags;
+        // cc.director.getPhysicsManager().debugDrawFlags =
+        //     cc.PhysicsManager.DrawBits.e_jointBit |
+        //     cc.PhysicsManager.DrawBits.e_shapeBit;
+
     },
 
     onLoad () {
         cc.director.getPhysicsManager().enabled = true;
+
 
         this.touching = false;
         this.touchStartPoint = cc.p(cc.Vec2.ZERO);
         this.touchPoint = cc.p(cc.Vec2.ZERO);
         this.ctx = this.graphicsNode.getComponent(cc.Graphics);
 
-        cc.log("game");
-
         var values = [{num:1},{num:2},{num:3}];
         var valueTag = values.every(function (item,index,array) {
             return (item.num > 2);
         });
 
-        cc.log("value Tag " + valueTag);
-
         var numbers = values.filter(function (item,index,array) {
             return (item.num > 2);
         });
 
-        numbers.forEach(function (item,index,array) {
-            cc.log("item num = " + item.num);
-        });
 
         var number2 = values.map(function (item,index,array) {
             item.num += 2;
             return item;
-        });
-
-        number2.forEach(function (item) {
-            cc.log("item2 num = " + item.num);
         });
 
 
@@ -90,24 +87,139 @@ cc.Class({
 
         });
 
+        this.initData();
+
+
         // book.year = 2005;
-        cc.log("book year = %d",book.year);
-        cc.log(Object.getOwnPropertyDescriptor(book,"year"));
+
+
 
 
     },
 
+   
+   
 
     start () {
-        this.initData();
         this.addTouchEvent();
+
+
+        this.ctx.clear(true);
+        this.ctx.fillColor = cc.Color.RED;
+
+        let points = [cc.p(0,0),cc.p(0,100),cc.p(100,100),cc.p(100,0)];
+        for (let i = 0; i < points.length; i++) {
+            var nodePosition = points[i];
+            if (i === 0) {
+                this.ctx.moveTo(nodePosition);
+            } else {
+                this.ctx.lineTo(nodePosition);
+            }
+        }
+
+        this.ctx.fill();
+
 
 
         this.tiledLine.setContentSize(this.tiledLine.getContentSize().width,0);
     },
 
+    createLevelData: function (id) {
+        this.levelData = USGlobal.ConfigData.levelData.get(id);
+        this.upPosition = this.node.position;
+        // this.createPhysicsCollider();
+
+
+
+
+    },
+
+    createPhysicsCollider() {
+
+        let  terrainArray = this.levelData.terrainId;
+        for (let i = 0; i < terrainArray.length; i++) {
+            let data = USGlobal.ConfigData.terainData.get(terrainArray[i]);
+            let node = this.createNode(data);
+            node.x = this.levelData.terrainPosition[i][0];
+            node.y = this.levelData.terrainPosition[i][1];
+            node.group = "terrain";
+            let body = node.addComponent(cc.RigidBody);
+            body.type = cc.RigidBodyType.Static;
+
+            if (data.type === TerrainType.Box) {
+                this.createPhysicsBoxCollider(node,data);
+            } else if (data.type === TerrainType.Polygon) {
+                this.createPhysicsPolygonCollider(node,data);
+            }
+
+            let collider = node.getComponent(cc.PhysicsBoxCollider);
+            this.allColliderArray.push(node);
+
+
+        }
+
+        let contentArray = this.levelData.contentId;
+        for (let i = 0; i < contentArray.length; i++) {
+            let data = USGlobal.ConfigData.contentData.get(contentArray[i]);
+            let node = this.createNode(data);
+            node.x = this.levelData.contentPosition[i][0];
+            node.y = this.levelData.contentPosition[i][1];
+            let body = node.addComponent(cc.RigidBody);
+            body.type = cc.RigidBodyType.Dynamic;
+            if (data.type === TerrainType.Box) {
+                this.createPhysicsBoxCollider(node,data);
+            } else if (data.type === TerrainType.Polygon) {
+                this.createPhysicsPolygonCollider(node,data);
+            }
+
+            this.allColliderArray.push(node);
+        }
+
+
+        this.colliderArray.splice(0,this.colliderArray.length);
+
+        for (let i = 0; i < this.node.children.length; i++) {
+            var collider = this.node.children[i].getComponent(cc.PhysicsPolygonCollider);
+            if (collider) {
+                this.colliderArray.push(collider);
+            }
+
+        }
+
+
+
+
+
+    },
+
+    createNode: function (data) {
+        let node = new cc.Node();
+        this.node.addChild(node);
+        if (data.color && data.color.length === 3) {
+            node.color = cc.color(data.color[0],data.color[1],data.color[2]);
+        }
+        return node;
+    },
+
+    createPhysicsBoxCollider: function (node,data) {
+        let box = node.addComponent(cc.PhysicsBoxCollider);
+        box.size = cc.size(data.size[0],data.size[1]);
+        box.apply();
+    },
+
+    createPhysicsPolygonCollider: function (node,data) {
+        let polygon = node.addComponent(cc.PhysicsPolygonCollider);
+        for (let i = 0; i < data.points.length; i++) {
+            polygon.points[i] = cc.p(data.points[i][0],data.points[i][1]);
+        }
+        polygon.apply();
+
+    },
+
     initData: function () {
         this.touchId = -1;
+        this.colliderArray = [];
+        this.allColliderArray = [];
     },
 
     addTouchEvent: function () {
@@ -202,8 +314,11 @@ cc.Class({
             }
 
 
+
             for (let i = 0; i < pairs.length; i++) {
                 let pair = pairs[i];
+
+
                 if (pair.length < 2) {
                     continue;
                 }
@@ -254,9 +369,10 @@ cc.Class({
                     }
 
                     let node = new cc.Node();
-                    node.position = body.getWorldPosition();
+                    node.position = this.node.convertToNodeSpaceAR(body.getWorldPosition());
                     node.rotation = body.getWorldRotation();
-                    node.parent = cc.director.getScene();
+                    node.parent = this.node;
+                    node.color = collider.node.color;
 
                     node.addComponent(cc.RigidBody);
 
@@ -265,6 +381,22 @@ cc.Class({
                     newCollider.apply();
                 }
             }
+
+
+            this.colliderArray.splice(0,this.colliderArray.length);
+
+            for (let i = 0; i < this.node.children.length; i++) {
+                var collider = this.node.children[i].getComponent(cc.PhysicsPolygonCollider);
+                if (collider) {
+                    this.colliderArray.push(collider);
+                }
+
+            }
+
+
+
+            
+            
         }.bind(this);
         this.node.on("touchstart", touchStart);
         this.node.on('touchmove', touchMove);
@@ -414,6 +546,70 @@ cc.Class({
         return cc.Intersection.pointLineDistance(point, a, b, true) < 1;
     },
 
-    // update (dt) {
-    // },
+    update (dt) {
+
+        return;
+
+        let position = this.node.position;
+        if (this.upPosition.x !== position.x || this.upPosition.y !== position.y) {
+            for (let i = 0; i < this.allColliderArray.length; i++) {
+                let node = this.allColliderArray[i];
+                node.x += position.x - this.upPosition.x;
+                node.y += position.y - this.upPosition.y;
+            }
+
+            this.upPosition = position;
+        }
+
+
+
+
+
+        if (this.colliderArray.length === 0) {
+            return;
+        }
+
+
+        this.ctx.clear(true);
+
+        for (let i = 0; i < this.colliderArray.length; i++) {
+            let dataArray = this.colliderArray[i].points;
+            for (let j = 0; j < dataArray.length; j++) {
+                var worldPosition = this.colliderArray[i].node.convertToWorldSpaceAR(cc.p(dataArray[j].x,dataArray[j].y));
+                var nodePosition = this.node.convertToNodeSpaceAR(worldPosition);
+                this.ctx.fillColor = this.colliderArray[i].node.color;
+                if (j === 0) {
+                    this.ctx.moveTo(nodePosition);
+                } else {
+                    this.ctx.lineTo(nodePosition);
+                }
+
+                this.ctx.fill();
+            }
+
+        }
+
+
+
+
+    },
+
+
+    removeAllCollider: function () {
+        cc.log("清除所有图形");
+        while (this.allColliderArray.length > 0) {
+            let collider = this.allColliderArray.pop();
+            collider.destroy();
+        }
+
+        while (this.colliderArray.length > 0) {
+            let collider = this.colliderArray.pop();
+            collider.node.destroy();
+
+        }
+
+        this.touchId = -1;
+        this.upPosition = cc.Vec2.ZERO;
+    },
+
 });

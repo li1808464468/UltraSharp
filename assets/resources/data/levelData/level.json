@@ -1,0 +1,10 @@
+[
+  {
+    "levelId": 0,
+    "levelType": 1.0,
+    "terrainId": [1],
+    "terrainPosition": [[-100,0]],
+    "contentId": [1],
+    "contentPosition": [[-100,0]]
+  }
+]
