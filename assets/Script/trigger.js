@@ -42,9 +42,10 @@ cc.Class({
     },
 
 
-    playDestroyAnimation: function (type) {
-
-
+    playDestroyAnimation: function (type = 0) {
+        if (type === 0) {
+            
+        }
     },
 
 

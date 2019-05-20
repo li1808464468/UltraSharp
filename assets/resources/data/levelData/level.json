@@ -28,5 +28,15 @@
   "contentPosition": [[-198, 0]],
   "triggerId": [0,0],
   "triggerPosition": [[-200,-200],[175,-200]]
-}
+  },
+  {
+  "levelId": 3,
+  "levelType": 0,
+  "terrainId": [3],
+  "terrainPosition": [[-198, -200]],
+  "contentId": [3,3,3],
+  "contentPosition": [[-65, -169],[-65,-39],[-65, 91]],
+  "triggerId": [0,0],
+  "triggerPosition": [[-170,30],[175,-90]]
+  }
 ]
