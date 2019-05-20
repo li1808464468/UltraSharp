@@ -28,7 +28,19 @@ cc.Class({
 
         },this);
 
-
+        // let collider = this.star.getComponent(cc.PolygonCollider);
+        // let str = "";
+        // for (let i = 0; i < collider.points.length; i++) {
+        //     str+="["
+        //     let p = collider.points[i];
+        //     str+= p.x + ","
+        //     str+= p.y + "]"
+        //     if (i < collider.points.length - 1) {
+        //         str+= ","
+        //     }
+        // }
+        //
+        // console.log(str);
     },
 
     start () {
@@ -36,7 +48,7 @@ cc.Class({
     },
 
     enterGame: function (levelId) {
-        let move1 = cc.moveBy(15,cc.v2(0,cc.winSize.height));
+        let move1 = cc.moveBy(0.15,cc.v2(0,cc.winSize.height));
         this.node.runAction(move1);
 
         this.gameLayer.active = true;
@@ -44,7 +56,7 @@ cc.Class({
         let move2 = move1.clone();
         // let move2 = cc.moveBy(15,cc.v2(0,cc.winSize.height * 0.2));
         this.gameLayer.runAction(move2);
-        this.gameLayer.getComponent("game").createLevelData(0);
+        this.gameLayer.getComponent("game").createLevelData(levelId);
 
 
     },

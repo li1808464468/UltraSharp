@@ -20,21 +20,23 @@ cc.Class({
 
     onLoad () {
         window.USGlobal = {
-            MathHelp: require("MathHelp"),
             ConfigData: require("ConfigData"),
             NotifyManager: require("NotifyManager"),
+            HelpManager: require("HelpManager"),
         }
           
 
         this.initLevelData();
         this.initTerainData();
         this.initContentData();
+        this.initTriggerData();
     },
 
     start () {
         // this.gameLayer.active = false;
     },
 
+    // 初始化关卡数据
     initLevelData: function () {
 
         cc.loader.loadRes('data/levelData/level.json', function (err, object) {
@@ -52,6 +54,7 @@ cc.Class({
         });
     },
 
+    // 初始化地形数据
     initTerainData: function () {
         cc.loader.loadRes('data/levelData/terrainData.json', function (err, object) {
             if (err) {
@@ -68,6 +71,7 @@ cc.Class({
         });
     },
 
+    // 初始化可切割数据
     initContentData: function () {
         cc.loader.loadRes('data/levelData/contentData.json', function (err, object) {
             if (err) {
@@ -79,6 +83,22 @@ cc.Class({
                 USGlobal.ConfigData.contentData.set(object.json[i].id,object.json[i]);
             }
 
+
+
+        });
+    },
+
+    // 初始化检测器
+    initTriggerData: function () {
+        cc.loader.loadRes('data/levelData/triggerData.json', function (err, object) {
+            if (err) {
+                console.log(err);
+                return;
+            }
+
+            for (let i = 0; i < object.json.length; i++) {
+                USGlobal.ConfigData.triggerData.set(object.json[i].id,object.json[i]);
+            }
 
 
         });

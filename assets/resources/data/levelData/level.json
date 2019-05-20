@@ -1,10 +1,32 @@
 [
   {
     "levelId": 0,
-    "levelType": 1.0,
-    "terrainId": [1],
-    "terrainPosition": [[-100,0]],
+    "levelType": 0,
+    "terrainId": [0],
+    "terrainPosition": [[-200,0]],
+    "contentId": [0],
+    "contentPosition": [[-200,0]],
+    "triggerId": [0],
+    "triggerPosition": [[100,50]]
+  },
+  {
+    "levelId": 1,
+    "levelType": 0,
+    "terrainId": [1,1],
+    "terrainPosition": [[-150, 30],[100, 30]],
     "contentId": [1],
-    "contentPosition": [[-100,0]]
-  }
+    "contentPosition": [[-150, 183]],
+    "triggerId": [0],
+    "triggerPosition": [[0,60]]
+  },
+  {
+  "levelId": 2,
+  "levelType": 0,
+  "terrainId": [2],
+  "terrainPosition": [[-86, -801]],
+  "contentId": [2],
+  "contentPosition": [[-198, 0]],
+  "triggerId": [0,0],
+  "triggerPosition": [[-200,-200],[175,-200]]
+}
 ]

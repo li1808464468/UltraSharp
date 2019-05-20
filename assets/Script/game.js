@@ -11,9 +11,31 @@
 const EPSILON = 0.1;
 const POINT_SQR_EPSILON = 5;
 
+// 物理组件类型
 let TerrainType = cc.Enum({
+    // 盒子
     Box: 0,
+    // 多边形
     Polygon: 1,
+});
+
+let LevelType = cc.Enum({
+    // 消除星星
+    ClearStar: 0,
+});
+
+let NodeGroup = cc.Enum({
+    Default: "default",
+    Terrain: "terrain",
+    Content: "content",
+    Trigger: "trigger",
+});
+
+let GameState = cc.Enum({
+    Default: 0,
+    Pause:1,
+    Succeed:2,
+    Failure:3,
 });
 
 
@@ -25,20 +47,23 @@ cc.Class({
         tiledLine: cc.Node,
         graphicsNode: cc.Node,
         debugGraphics: cc.Node,
+        gameOverLayer: cc.Node,
+
         normalSprite: cc.SpriteFrame,
     },
 
     // LIFE-CYCLE CALLBACKS:
     onEnable: function () {
-        this.debugDrawFlags = cc.director.getPhysicsManager().debugDrawFlags;
-        cc.director.getPhysicsManager().debugDrawFlags =
-            cc.PhysicsManager.DrawBits.e_jointBit |
-            cc.PhysicsManager.DrawBits.e_shapeBit;
+        // this.debugDrawFlags = cc.director.getPhysicsManager().debugDrawFlags;
+        // cc.director.getPhysicsManager().debugDrawFlags =
+        //     cc.PhysicsManager.DrawBits.e_jointBit |
+        //     cc.PhysicsManager.DrawBits.e_shapeBit;
 
     },
 
     onLoad () {
         cc.director.getPhysicsManager().enabled = true;
+        cc.director.getPhysicsManager().gravity = cc.v2(0,-800);
 
 
         this.touching = false;
@@ -91,8 +116,7 @@ cc.Class({
 
 
         // book.year = 2005;
-
-
+        
 
 
 
@@ -110,17 +134,10 @@ cc.Class({
     },
 
     createLevelData: function (id) {
+        this.levelId = id;
         this.levelData = USGlobal.ConfigData.levelData.get(id);
         this.upPosition = this.node.position;
         this.createPhysicsCollider();
-
-
-
-
-
-
-
-
     },
 
     createPhysicsCollider() {
@@ -131,7 +148,7 @@ cc.Class({
             let node = this.createNode(data);
             node.x = this.levelData.terrainPosition[i][0];
             node.y = this.levelData.terrainPosition[i][1];
-            node.group = "terrain";
+            node.group = NodeGroup.Terrain;
             let body = node.addComponent(cc.RigidBody);
             body.type = cc.RigidBodyType.Static;
 
@@ -151,9 +168,11 @@ cc.Class({
         for (let i = 0; i < contentArray.length; i++) {
             let data = USGlobal.ConfigData.contentData.get(contentArray[i]);
             let node = this.createNode(data);
+            node.group = NodeGroup.Content;
             node.x = this.levelData.contentPosition[i][0];
             node.y = this.levelData.contentPosition[i][1];
             let body = node.addComponent(cc.RigidBody);
+            body.enabledContactListener = true;
             body.type = cc.RigidBodyType.Dynamic;
             if (data.type === TerrainType.Box) {
                 this.createPhysicsBoxCollider(node,data);
@@ -163,6 +182,32 @@ cc.Class({
 
             this.allColliderArray.push(node);
         }
+
+        let triggerArray = this.levelData.triggerId;
+        for (let i = 0; i < triggerArray.length; i++) {
+            let data = USGlobal.ConfigData.triggerData.get(triggerArray[i]);
+            let node = this.createNode(data);
+            node.group = NodeGroup.Trigger;
+            node.x = this.levelData.triggerPosition[i][0];
+            node.y = this.levelData.triggerPosition[i][1];
+            let body = node.addComponent(cc.RigidBody);
+            body.enabledContactListener = true;
+            body.type = cc.RigidBodyType.Static;
+            let js = node.addComponent("trigger");
+            js.onBeginContact = this.onBeginContact.bind(this);
+
+
+            if (data.type === TerrainType.Box) {
+                this.createPhysicsBoxCollider(node,data);
+            } else if (data.type === TerrainType.Polygon) {
+                this.createPhysicsPolygonCollider(node,data,true);
+            }
+
+            this.terrainArray.push(node);
+            this.allColliderArray.push(node);
+        }
+
+
 
 
         this.colliderArray.splice(0,this.colliderArray.length);
@@ -187,6 +232,11 @@ cc.Class({
         if (data.color && data.color.length === 3) {
             node.color = cc.color(data.color[0],data.color[1],data.color[2]);
         }
+        if (data.scale && data.scale.length === 2) {
+            node.scaleX = data.scale[0];
+            node.scaleY = data.scale[1];
+        }
+
         return node;
     },
 
@@ -196,19 +246,26 @@ cc.Class({
         box.apply();
     },
 
-    createPhysicsPolygonCollider: function (node,data) {
+    createPhysicsPolygonCollider: function (node,data,sensor=false) {
         let polygon = node.addComponent(cc.PhysicsPolygonCollider);
         for (let i = 0; i < data.points.length; i++) {
             polygon.points[i] = cc.v2(data.points[i][0],data.points[i][1]);
         }
+        polygon.sensor = sensor;
+
         polygon.apply();
+
+
 
     },
 
     initData: function () {
         this.touchId = -1;
+        this.levelId = -1;
         this.colliderArray = [];
         this.allColliderArray = [];
+        this.terrainArray = [];
+        this.gameState = GameState.Default;
     },
 
     addTouchEvent: function () {
@@ -239,7 +296,7 @@ cc.Class({
             this.tiledLine.setContentSize(this.tiledLine.getContentSize().width,distance);
             this.tiledLine.scaleY = state;
 
-            var rotation = USGlobal.MathHelp.pPointAngle(p1,p2);
+            var rotation = USGlobal.HelpManager.pPointAngle(p1,p2);
 
             if (p1.y > p2.y && p1.x < p2.x) {
                 rotation *= -1;
@@ -358,12 +415,14 @@ cc.Class({
                     }
 
                     let node = new cc.Node();
+                    node.group = NodeGroup.Content
                     node.position = this.node.convertToNodeSpaceAR(body.getWorldPosition());
                     node.rotation = body.getWorldRotation();
                     node.parent = this.node;
                     node.color = collider.node.color;
 
-                    node.addComponent(cc.RigidBody);
+                    let bodyCollider = node.addComponent(cc.RigidBody);
+                    bodyCollider.enabledContactListener = true;
 
                     let newCollider = node.addComponent(cc.PhysicsPolygonCollider);
                     newCollider.points = splitResult;
@@ -407,7 +466,7 @@ cc.Class({
 
         let result = r1.concat(r2);
         let results = result.filter((item) => {
-           if (item.collider.node.group !== "terrain") {
+           if (item.collider.node.group === NodeGroup.Content) {
                return item;
            }
         });
@@ -566,8 +625,7 @@ cc.Class({
                 var worldPosition = this.colliderArray[i].node.convertToWorldSpaceAR(cc.v2(dataArray[j].x,dataArray[j].y));
                 var nodePosition = this.node.convertToNodeSpaceAR(worldPosition);
 
-                // this.ctx.fillColor = this.colliderArray[i].node.color;
-                this.ctx.fillColor = cc.Color.RED;
+                this.ctx.fillColor = this.colliderArray[i].node.color;
                 if (j === 0) {
                     this.ctx.moveTo(nodePosition.x,nodePosition.y);
 
@@ -602,9 +660,77 @@ cc.Class({
             collider.node.destroy();
 
         }
+    },
 
+
+
+    onBeginContact: function (contact, selfCollider, otherCollider) {
+
+        if (this.gameState !== GameState.Default) {
+            return;
+        }
+
+
+        for (let i = 0; i < this.terrainArray.length; i++) {
+            if (selfCollider.node == this.terrainArray[i]){
+                selfCollider.node.getComponent("trigger").playDestroyAnimation(0);
+                this.terrainArray.splice(i,1);
+                break;
+            }
+        }
+
+        if (this.terrainArray.length == 0) {
+            this.gameState = GameState.Succeed;
+            this.popupGameOver();
+        }
+
+    },
+
+
+
+    popupGameOver: function () {
+        this.gameOverLayer.active = true;
+        if (this.gameState === GameState.Succeed) {
+            this.gameOverLayer.getComponent("popupGameOver").showSucceedLayer();
+
+        }
+
+    },
+
+
+    resumeData: function () {
+        this.terrainArray = [];
         this.touchId = -1;
         this.upPosition = cc.Vec2.ZERO;
+        this.gameState = GameState.Default;
+        this.levelId = -1;
+    },
+
+
+    endGame: function () {
+
+        this.resumeData();
+        this.removeAllCollider();
+
+    },
+
+
+    resumeGame: function () {
+        let levelId = this.levelId;
+        this.resumeData();
+        this.removeAllCollider();
+
+        this.scheduleOnce(()=>{
+            this.createLevelData(levelId);
+        },0.01);
+    },
+
+    nextGame: function () {
+        this.gameOverLayer.active = false;
+        // this.levelId+= 1;
+
+        this.resumeGame();
+
     },
 
 });

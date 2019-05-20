@@ -8,21 +8,16 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 
-var PopupManager = require("PopupManager");
-
 cc.Class({
-    extends: PopupManager,
+    extends: cc.Component,
 
     properties: {
+
     },
 
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-        this._super();
-    },
-
-    onDestroy () {
 
     },
 
@@ -30,10 +25,29 @@ cc.Class({
 
     },
 
-    showSucceedLayer: function () {
-        this.playAnimation();
-    }
+    // 只在两个碰撞体开始接触时被调用一次
+    onBeginContact: function (contact, selfCollider, otherCollider) {
+    },
+
+    // 只在两个碰撞体结束接触时被调用一次
+    onEndContact: function (contact, selfCollider, otherCollider) {
+    },
+
+    // 每次将要处理碰撞体接触逻辑时被调用
+    onPreSolve: function (contact, selfCollider, otherCollider) {
+    },
+
+    // 每次处理完碰撞体接触逻辑时被调用
+    onPostSolve: function (contact, selfCollider, otherCollider) {
+    },
+
+
+    playDestroyAnimation: function (type) {
+
+
+    },
 
 
 
+    // update (dt) {},
 });

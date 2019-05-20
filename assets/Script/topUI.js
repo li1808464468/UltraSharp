@@ -31,11 +31,15 @@ cc.Class({
         let move1 = cc.moveBy(0.15,cc.v2(0,-cc.winSize.height));
         this.mainLayer.runAction(move1);
 
-        this.gameLayer.getComponent("game").removeAllCollider();
+        this.gameLayer.getComponent("game").endGame();
         this.gameLayer.active = false;
         this.gameLayer.y = cc.winSize.height;
         let move2 = move1.clone();
         this.gameLayer.runAction(move2);
+    },
+
+    resumeGame: function () {
+        this.gameLayer.getComponent("game").resumeGame();
     },
 
     // update (dt) {},

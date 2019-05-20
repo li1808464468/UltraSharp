@@ -15,6 +15,8 @@ var ConfigData = {
     terainData: new Map(),
     // 场内可切除数据
     contentData: new Map(),
+    // 检测器
+    triggerData: new Map(),
 };
 module.exports = ConfigData;
 
