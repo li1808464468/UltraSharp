@@ -19,11 +19,14 @@ let TerrainType = cc.Enum({
     Polygon: 1,
 });
 
+// content 可切割可碰撞
+// content1 可切割不能和触发器碰撞
 let NodeGroup = cc.Enum({
     Default: "default",
     Terrain: "terrain",
     Content: "content",
     Trigger: "trigger",
+    Content1: "content1",
 });
 
 let GameState = cc.Enum({
@@ -171,11 +174,13 @@ cc.Class({
         let contentArray = this.levelData.contentId;
         for (let i = 0; i < contentArray.length; i++) {
             let data = USGlobal.ConfigData.contentData.get(contentArray[i]);
+            console.log(data);
             let node = this.createNode(data);
             node.group = NodeGroup.Content;
             node.x = this.levelData.contentPosition[i][0];
             node.y = this.levelData.contentPosition[i][1];
             let body = node.addComponent(cc.RigidBody);
+            body.gravityScale = 3;
             body.enabledContactListener = true;
             body.type = cc.RigidBodyType.Dynamic;
             if (data.type === TerrainType.Box) {
@@ -183,6 +188,19 @@ cc.Class({
             } else if (data.type === TerrainType.Polygon) {
                 this.createPhysicsPolygonCollider(node,data);
             }
+
+            if (data.state) {
+                if (data.state === 1) {
+                    body.type = cc.RigidBodyType.Static;
+                }
+            }
+
+            if (data.group) {
+                if (data.group === 1) {
+                    node.group = NodeGroup.Content1;
+                }
+            }
+
 
             this.allColliderArray.push(node);
         }
@@ -410,7 +428,7 @@ cc.Class({
                     }
 
                     let node = new cc.Node();
-                    node.group = NodeGroup.Content
+                    node.group = body.node.group;
                     node.position = this.node.convertToNodeSpaceAR(body.getWorldPosition());
                     node.rotation = body.getWorldRotation();
                     node.parent = this.node;
@@ -461,7 +479,7 @@ cc.Class({
 
         let result = r1.concat(r2);
         let results = result.filter((item) => {
-           if (item.collider.node.group === NodeGroup.Content) {
+           if (item.collider.node.group === NodeGroup.Content || item.collider.node.group === NodeGroup.Content1) {
                return item;
            }
         });
