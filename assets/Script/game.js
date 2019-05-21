@@ -19,11 +19,6 @@ let TerrainType = cc.Enum({
     Polygon: 1,
 });
 
-let LevelType = cc.Enum({
-    // 消除星星
-    ClearStar: 0,
-});
-
 let NodeGroup = cc.Enum({
     Default: "default",
     Terrain: "terrain",
@@ -123,6 +118,15 @@ cc.Class({
 
     },
 
+    initData: function () {
+        this.touchId = -1;
+        this.levelId = -1;
+        this.colliderArray = [];
+        this.allColliderArray = [];
+        this.terrainArray = [];
+        this.gameState = GameState.Default;
+        this.cutCount = 0;
+    },
    
    
 
@@ -259,15 +263,6 @@ cc.Class({
 
     },
 
-    initData: function () {
-        this.touchId = -1;
-        this.levelId = -1;
-        this.colliderArray = [];
-        this.allColliderArray = [];
-        this.terrainArray = [];
-        this.gameState = GameState.Default;
-    },
-
     addTouchEvent: function () {
         var touchStart = function (touch) {
             if (this.touchId === -1) {
@@ -313,7 +308,7 @@ cc.Class({
                 return;
             }
 
-
+            this.cutCount++;
             this.touchId = -1;
             this.tiledLine.active = false;
             this.tiledLine.setContentSize(this.tiledLine.getContentSize().width,0);
@@ -692,7 +687,6 @@ cc.Class({
         this.gameOverLayer.active = true;
         if (this.gameState === GameState.Succeed) {
             this.gameOverLayer.getComponent("popupGameOver").showSucceedLayer();
-
         }
 
     },
@@ -704,6 +698,7 @@ cc.Class({
         this.upPosition = cc.Vec2.ZERO;
         this.gameState = GameState.Default;
         this.levelId = -1;
+        this.cutCount = 0;
     },
 
 

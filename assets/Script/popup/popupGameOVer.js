@@ -14,6 +14,11 @@ cc.Class({
     extends: PopupManager,
 
     properties: {
+        gameNode: cc.Node,
+        starNode: {
+            default: [],
+            type: cc.Node,
+        }
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -31,8 +36,37 @@ cc.Class({
     },
 
     showSucceedLayer: function () {
+        this.createStar();
         this.playAnimation();
-    }
+    },
+
+
+    createStar: function () {
+        let gameJs = this.gameNode.getComponent("game");
+        if (gameJs.levelData.levelType === USGlobal.GameManager.LevelType.ClearStar) {
+
+            let starCount = 3;
+            for (let i = 0; i < gameJs.levelData.count.length; i++) {
+
+                if (gameJs.cutCount === gameJs.levelData.count[i] || (i === gameJs.levelData.count.length - 1)) {
+                    starCount -= i;
+                    break;
+                }
+            }
+
+            for (let i = 0; i < this.starNode.length; i++) {
+                if (i <= starCount - 1) {
+                    this.starNode[i].active = true;
+                } else {
+                    this.starNode[i].active = false;
+                }
+            }
+
+
+
+
+        }
+    },
 
 
 

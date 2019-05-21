@@ -44,7 +44,11 @@ cc.Class({
 
     playDestroyAnimation: function (type = 0) {
         if (type === 0) {
-            
+            let scale1 = cc.scaleTo(0.17,1.3);
+            let scale2 = cc.scaleTo(0.2,0.2);
+            let remove = cc.removeSelf();
+            let seq = cc.sequence(scale1,scale2,remove);
+            this.node.runAction(seq);
         }
     },
 

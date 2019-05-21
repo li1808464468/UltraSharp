@@ -23,6 +23,7 @@ cc.Class({
             ConfigData: require("ConfigData"),
             NotifyManager: require("NotifyManager"),
             HelpManager: require("HelpManager"),
+            GameManager: require("GameManager"),
         }
           
 
