@@ -144,6 +144,27 @@ var HelpManager = {
 
         });
     },
+
+
+    // 获取多边形的面积  参数 坐标集合
+    getPolygonArea: function (points) {
+        let length = points.length;
+        if (length < 3) {
+            return 0;
+        }
+
+        let ans = 0;
+        for (let i = 1; i < length; i++) {
+            ans += points[i].x * points[i - 1].y - points[i].y * points[i-1].x;
+        }
+
+        ans += points[0].x * points[length - 1].y - points[0].y * points[length-1].x;
+
+        ans = ans/2.0;
+
+        return Math.abs(ans);
+    },
+
 };
 
 module.exports = HelpManager;

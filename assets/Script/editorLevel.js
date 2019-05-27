@@ -32,6 +32,8 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
+        
+
         let array = this.node.children;
         for (let i = 0; i < array.length; i++) {
             let node = array[i];

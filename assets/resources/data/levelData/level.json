@@ -53,5 +53,12 @@
     "triggerId": [1],
     "triggerPosition": [[220,0]],
     "count": [1,2,3]
+  },
+  {
+    "levelId": 5,
+    "levelType": 0,
+    "contentId": [6],
+    "contentPosition": [[33, 85]],
+    "count": [1,2,3]
   }
 ]

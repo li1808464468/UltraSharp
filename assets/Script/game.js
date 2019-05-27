@@ -150,7 +150,7 @@ cc.Class({
     createPhysicsCollider() {
 
         let  terrainArray = this.levelData.terrainId;
-        for (let i = 0; i < terrainArray.length; i++) {
+        for (let i = 0; terrainArray && i < terrainArray.length; i++) {
             let data = USGlobal.ConfigData.terainData.get(terrainArray[i]);
             let node = this.createNode(data);
             node.x = this.levelData.terrainPosition[i][0];
@@ -172,7 +172,7 @@ cc.Class({
         }
 
         let contentArray = this.levelData.contentId;
-        for (let i = 0; i < contentArray.length; i++) {
+        for (let i = 0; contentArray && i < contentArray.length; i++) {
             let data = USGlobal.ConfigData.contentData.get(contentArray[i]);
             console.log(data);
             let node = this.createNode(data);
@@ -206,7 +206,7 @@ cc.Class({
         }
 
         let triggerArray = this.levelData.triggerId;
-        for (let i = 0; i < triggerArray.length; i++) {
+        for (let i = 0; triggerArray && i < triggerArray.length; i++) {
             let data = USGlobal.ConfigData.triggerData.get(triggerArray[i]);
             let node = this.createNode(data);
             node.group = NodeGroup.Trigger;
@@ -406,8 +406,17 @@ cc.Class({
                             splitResult[k] = collider.points[splitResult[k]];
                         } 
                     }
-                    
-                    if (!maxPointsResult || splitResult.length > maxPointsResult.length) {
+
+                    let s0 = 0;
+                    let s1 = 0;
+
+                    if (maxPointsResult) {
+                        s0 = USGlobal.HelpManager.getPolygonArea(maxPointsResult);
+                        s1 = USGlobal.HelpManager.getPolygonArea(splitResult);
+                    }
+
+                    // 将面积大的保留
+                    if (!maxPointsResult || s1 > s0) {
                         maxPointsResult = splitResult;
                     }
                 }
