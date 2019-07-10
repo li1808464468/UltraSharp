@@ -18,7 +18,7 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-
+        this.colliderArray = [];
     },
 
     start () {
@@ -46,8 +46,14 @@ cc.Class({
         if (type === 0) {
             let scale1 = cc.scaleTo(0.17,1.3);
             let scale2 = cc.scaleTo(0.2,0.2);
+            let func = cc.callFunc(()=>{
+                let index = this.colliderArray.indexOf(this.node.getComponent(cc.PhysicsPolygonCollider));
+                if (index !== -1) {
+                    this.colliderArray.splice(index,1);
+                };
+            });
             let remove = cc.removeSelf();
-            let seq = cc.sequence(scale1,scale2,remove);
+            let seq = cc.sequence(scale1,scale2,func,remove);
             this.node.runAction(seq);
         }
     },

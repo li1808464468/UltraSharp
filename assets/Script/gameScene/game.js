@@ -27,13 +27,34 @@ let NodeGroup = cc.Enum({
     Content: "content",
     Trigger: "trigger",
     Content1: "content1",
+    Terrain1: "terrain1",
 });
 
+// 游戏状态
 let GameState = cc.Enum({
+    // 正常
     Default: 0,
+    // 暂停
     Pause:1,
+    // 成功
     Succeed:2,
+    // 失败
     Failure:3,
+});
+
+// 节点类型
+let JoinGroup = cc.Enum({
+    // 滑轮
+    RevoluteJoint: 0,
+});
+
+
+// 物理组件类型
+let RigidBodyType = cc.Enum({
+    // 动态
+    Dynamic: 0,
+    // 静态
+    Static: 1,
 });
 
 
@@ -63,10 +84,10 @@ cc.Class({
         cc.director.getPhysicsManager().enabled = true;
         cc.director.getPhysicsManager().gravity = cc.v2(0,-800);
 
-
         this.touching = false;
         this.touchStartPoint = cc.v2(cc.Vec2.ZERO);
         this.touchPoint = cc.v2(cc.Vec2.ZERO);
+        // 绘制线段
         this.ctx = this.graphicsNode.getComponent(cc.Graphics);
 
         var values = [{num:1},{num:2},{num:3}];
@@ -97,17 +118,6 @@ cc.Class({
                 return this._year;
             },
 
-            // set: function(newValue) {
-            //     cc.log("设置 new value");
-            //     if (newValue > 2004) {
-            //         this._year = newValue;
-            //         this.edition += newValue - 2004;
-            //     }
-            // },
-
-            // configurable: true,
-
-
         });
 
         this.initData();
@@ -127,6 +137,9 @@ cc.Class({
         this.colliderArray = [];
         this.allColliderArray = [];
         this.terrainArray = [];
+        this.triggerArray = [];
+        this.jointArray = [];
+        this.contentArray = [];
         this.gameState = GameState.Default;
         this.cutCount = 0;
     },
@@ -149,15 +162,26 @@ cc.Class({
 
     createPhysicsCollider() {
 
-        let  terrainArray = this.levelData.terrainId;
-        for (let i = 0; terrainArray && i < terrainArray.length; i++) {
-            let data = USGlobal.ConfigData.terainData.get(terrainArray[i]);
+        let  terrainArray = this.levelData.terrainId ? this.levelData.terrainId : [];
+        let terrainIndex = 0;
+        terrainArray.forEach((id)=>{
+            let data = USGlobal.ConfigData.terainData.get(id);
             let node = this.createNode(data);
-            node.x = this.levelData.terrainPosition[i][0];
-            node.y = this.levelData.terrainPosition[i][1];
+            node.x = this.levelData.terrainPosition[terrainIndex][0];
+            node.y = this.levelData.terrainPosition[terrainIndex][1];
+            terrainIndex++;
             node.group = NodeGroup.Terrain;
-            let body = node.addComponent(cc.RigidBody);
-            body.type = cc.RigidBodyType.Static;
+            let body = this.createRigidBody(node,data);
+            if ((data.state !== undefined ) && data.state === RigidBodyType.Dynamic) {
+                body.type = cc.RigidBodyType.Dynamic;
+            } else {
+                body.type = cc.RigidBodyType.Static;
+            }
+            
+            if (data.group !== undefined) {
+                node.group = data.group;
+            }
+
 
             if (data.type === TerrainType.Box) {
                 this.createPhysicsBoxCollider(node,data);
@@ -165,35 +189,38 @@ cc.Class({
                 this.createPhysicsPolygonCollider(node,data);
             }
 
+            this.terrainArray.push(node);
             let collider = node.getComponent(cc.PhysicsBoxCollider);
             this.allColliderArray.push(node);
+        });
 
 
-        }
-
-        let contentArray = this.levelData.contentId;
-        for (let i = 0; contentArray && i < contentArray.length; i++) {
-            let data = USGlobal.ConfigData.contentData.get(contentArray[i]);
-            console.log(data);
+        let contentArray = this.levelData.contentId ? this.levelData.contentId : [];
+        let contentIndex = 0;
+        contentArray.forEach((id)=>{
+            let data = USGlobal.ConfigData.contentData.get(id);
             let node = this.createNode(data);
             node.group = NodeGroup.Content;
-            node.x = this.levelData.contentPosition[i][0];
-            node.y = this.levelData.contentPosition[i][1];
-            let body = node.addComponent(cc.RigidBody);
+            node.x = this.levelData.contentPosition[contentIndex][0];
+            node.y = this.levelData.contentPosition[contentIndex][1];
+            contentIndex++;
+            let body = this.createRigidBody(node);
             body.gravityScale = 3;
             body.enabledContactListener = true;
-            body.type = cc.RigidBodyType.Dynamic;
             if (data.type === TerrainType.Box) {
                 this.createPhysicsBoxCollider(node,data);
             } else if (data.type === TerrainType.Polygon) {
                 this.createPhysicsPolygonCollider(node,data);
             }
+            node.indexId = id;
 
-            if (data.state) {
-                if (data.state === 1) {
-                    body.type = cc.RigidBodyType.Static;
-                }
+            if ((data.state !== undefined) && data.state === RigidBodyType.Static) {
+                body.type = cc.RigidBodyType.Static;
+            } else {
+                body.type = cc.RigidBodyType.Dynamic;
             }
+
+
 
             if (data.group) {
                 if (data.group === 1) {
@@ -201,22 +228,27 @@ cc.Class({
                 }
             }
 
-
+            this.contentArray.push(node);
             this.allColliderArray.push(node);
-        }
+        });
 
-        let triggerArray = this.levelData.triggerId;
-        for (let i = 0; triggerArray && i < triggerArray.length; i++) {
-            let data = USGlobal.ConfigData.triggerData.get(triggerArray[i]);
+
+        let triggerArray = this.levelData.triggerId ? this.levelData.triggerId : [];
+        let triggerIndex = 0;
+        triggerArray.forEach((id)=>{
+            let i = triggerArray.indexOf(id);
+            let data = USGlobal.ConfigData.triggerData.get(id);
             let node = this.createNode(data);
             node.group = NodeGroup.Trigger;
-            node.x = this.levelData.triggerPosition[i][0];
-            node.y = this.levelData.triggerPosition[i][1];
-            let body = node.addComponent(cc.RigidBody);
+            node.x = this.levelData.triggerPosition[triggerIndex][0];
+            node.y = this.levelData.triggerPosition[triggerIndex][1];
+            triggerIndex++;
+            let body = this.createRigidBody(node);
             body.enabledContactListener = true;
             body.type = cc.RigidBodyType.Static;
             let js = node.addComponent("trigger");
             js.onBeginContact = this.onBeginContact.bind(this);
+            js.colliderArray = this.colliderArray;
 
 
             if (data.type === TerrainType.Box) {
@@ -225,9 +257,40 @@ cc.Class({
                 this.createPhysicsPolygonCollider(node,data,true);
             }
 
-            this.terrainArray.push(node);
+            this.triggerArray.push(node);
             this.allColliderArray.push(node);
-        }
+        });
+
+        let jointArray = this.levelData.joinId ? this.levelData.joinId : [];
+        let joinIndex = 0;
+        jointArray.forEach((id)=>{
+            let data = USGlobal.ConfigData.joinData.get(id);
+            let node = this.createNode(data);
+            node.x = this.levelData.joinPosition[joinIndex][0];
+            node.y = this.levelData.joinPosition[joinIndex][1];
+            let sprite = node.addComponent(cc.Sprite);
+            sprite.spriteFrame = this.normalSprite;
+            node.setContentSize(cc.size(20,20));
+            let body = this.createRigidBody(node);
+            body.type = cc.RigidBodyType.Static;
+
+            let js = node.addComponent("joint");
+            if (data.type === JoinGroup.RevoluteJoint) {
+
+                let joint = node.addComponent(cc.RevoluteJoint);
+                joint.distance = 1;
+                joint.collideConnected = true;
+                // joint.anchor = new cc.v2(0,0);
+                joint.connectedAnchor = cc.v2(this.levelData.connectedAnchor[joinIndex][0],this.levelData.connectedAnchor[joinIndex][1]);
+                js.jointArray.push(joint);
+                js.data = data;
+            }
+            this.jointArray.push(node);
+            this.allColliderArray.push(node);
+
+            joinIndex++;
+
+        });
 
 
 
@@ -241,9 +304,7 @@ cc.Class({
             }
 
         }
-
-
-
+        this.changeJoint();
 
 
     },
@@ -262,6 +323,14 @@ cc.Class({
         return node;
     },
 
+
+    createRigidBody(node) {
+        let body = node.addComponent(cc.RigidBody);
+        body.angularDamping = 0.7;
+
+        return body;
+    },
+
     createPhysicsBoxCollider: function (node,data) {
         let box = node.addComponent(cc.PhysicsBoxCollider);
         box.size = cc.size(data.size[0],data.size[1]);
@@ -274,6 +343,9 @@ cc.Class({
             polygon.points[i] = cc.v2(data.points[i][0],data.points[i][1]);
         }
         polygon.sensor = sensor;
+        if (data.restitution) {
+            polygon.restitution = data.restitution;
+        }
 
         polygon.apply();
 
@@ -449,6 +521,7 @@ cc.Class({
                     let newCollider = node.addComponent(cc.PhysicsPolygonCollider);
                     newCollider.points = splitResult;
                     newCollider.apply();
+                    this.contentArray.push(node);
                 }
             }
 
@@ -463,6 +536,7 @@ cc.Class({
 
             }
 
+            this.changeJoint();
 
 
             
@@ -619,17 +693,19 @@ cc.Class({
     update (dt) {
 
 
-        let position = this.node.position;
-        if (this.upPosition.x !== position.x || this.upPosition.y !== position.y) {
-            for (let i = 0; i < this.allColliderArray.length; i++) {
-                let node = this.allColliderArray[i];
-                node.x += position.x - this.upPosition.x;
-                node.y += position.y - this.upPosition.y;
+        // 如果是进入和退出状态
+        if (true) {
+            let position = this.node.position;
+            if (this.upPosition.x !== position.x || this.upPosition.y !== position.y) {
+                for (let i = 0; i < this.allColliderArray.length; i++) {
+                    let node = this.allColliderArray[i];
+                    node.x += position.x - this.upPosition.x;
+                    node.y += position.y - this.upPosition.y;
+                }
+
+                this.upPosition = position;
             }
-
-            this.upPosition = position;
         }
-
 
 
 
@@ -641,30 +717,23 @@ cc.Class({
 
         this.ctx.clear();
 
-        for (let i = 0; i < this.colliderArray.length; i++) {
-            let dataArray = this.colliderArray[i].points;
-            for (let j = 0; j < dataArray.length; j++) {
-                var worldPosition = this.colliderArray[i].node.convertToWorldSpaceAR(cc.v2(dataArray[j].x,dataArray[j].y));
-                var nodePosition = this.node.convertToNodeSpaceAR(worldPosition);
-
-                this.ctx.fillColor = this.colliderArray[i].node.color;
-                if (j === 0) {
+        this.colliderArray.forEach((collider)=>{
+            let pointArray = collider.points;
+            let id = 0;
+            pointArray.forEach((point)=>{
+                let worldPosition = collider.node.convertToWorldSpaceAR(cc.v2(point.x,point.y));
+                let nodePosition = this.node.convertToNodeSpaceAR(worldPosition);
+                this.ctx.fillColor = collider.node.color;
+                if (id === 0) {
                     this.ctx.moveTo(nodePosition.x,nodePosition.y);
-
                 } else {
                     this.ctx.lineTo(nodePosition.x,nodePosition.y);
                 }
+                id++;
 
-            }
-
+            });
             this.ctx.fill();
-
-        }
-
-
-
-
-
+        });
 
 
     },
@@ -680,7 +749,6 @@ cc.Class({
         while (this.colliderArray.length > 0) {
             let collider = this.colliderArray.pop();
             collider.node.destroy();
-
         }
     },
 
@@ -693,15 +761,15 @@ cc.Class({
         }
 
 
-        for (let i = 0; i < this.terrainArray.length; i++) {
-            if (selfCollider.node == this.terrainArray[i]){
+        for (let i = 0; i < this.triggerArray.length; i++) {
+            if (selfCollider.node == this.triggerArray[i]){
                 selfCollider.node.getComponent("trigger").playDestroyAnimation(0);
-                this.terrainArray.splice(i,1);
+                this.triggerArray.splice(i,1);
                 break;
             }
         }
 
-        if (this.terrainArray.length == 0) {
+        if (this.triggerArray.length == 0) {
             this.gameState = GameState.Succeed;
             this.popupGameOver();
         }
@@ -720,27 +788,22 @@ cc.Class({
 
 
     resumeData: function () {
-        this.terrainArray = [];
-        this.touchId = -1;
         this.upPosition = cc.Vec2.ZERO;
-        this.gameState = GameState.Default;
-        this.levelId = -1;
-        this.cutCount = 0;
+        this.initData();
+
     },
 
 
     endGame: function () {
-
-        this.resumeData();
         this.removeAllCollider();
+        this.resumeData();
 
     },
 
 
     resumeGame: function () {
         let levelId = this.levelId;
-        this.resumeData();
-        this.removeAllCollider();
+        this.endGame();
 
         this.scheduleOnce(()=>{
             this.createLevelData(levelId);
@@ -754,5 +817,57 @@ cc.Class({
         this.resumeGame();
 
     },
+
+    changeJoint() {
+
+        this.contentArray.forEach((node)=>{
+            let collider = node.getComponent(cc.PhysicsPolygonCollider);
+            if (collider) {
+                this.jointArray.forEach((jointNode)=>{
+                    let point = jointNode.convertToWorldSpaceAR(cc.Vec2.ZERO);
+                    let nodePoint = node.convertToNodeSpaceAR(point);
+                    if (cc.Intersection.pointInPolygon(nodePoint,collider.points)) {
+                        let rigidBody = node.getComponent(cc.RigidBody);
+                        if (rigidBody) {
+                            let data = jointNode.getComponent("joint").data;
+                            if (data.type === JoinGroup.RevoluteJoint) {
+                                let joint = jointNode.getComponent(cc.RevoluteJoint);
+                                joint.connectedBody = rigidBody;
+                                joint.apply();
+                            }
+                        }
+                    }
+                });
+
+            }
+        });
+
+
+
+        this.terrainArray.forEach((node)=>{
+            let collider = node.getComponent(cc.PhysicsPolygonCollider);
+            if (collider) {
+                this.jointArray.forEach((jointNode)=>{
+                    let point = jointNode.convertToWorldSpaceAR(cc.Vec2.ZERO);
+                    let nodePoint = node.convertToNodeSpaceAR(point);
+                    if (cc.Intersection.pointInPolygon(nodePoint,collider.points)) {
+                        let rigidBody = node.getComponent(cc.RigidBody);
+                        if (rigidBody) {
+                            let data = jointNode.getComponent("joint").data;
+                            if (data.type === JoinGroup.RevoluteJoint) {
+                                let joint = jointNode.getComponent(cc.RevoluteJoint);
+                                joint.connectedBody = rigidBody;
+                                joint.apply();
+                            }
+                        }
+                    }
+                });
+
+            }
+        });
+
+
+    }
+
 
 });

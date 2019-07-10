@@ -17,6 +17,8 @@ var ConfigData = {
     contentData: new Map(),
     // 检测器
     triggerData: new Map(),
+    // 关节数据
+    joinData: new Map(),
 };
 module.exports = ConfigData;
 

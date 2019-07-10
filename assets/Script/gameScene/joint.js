@@ -27,37 +27,20 @@ cc.Class({
         //         this._bar = value;
         //     }
         // },
+
     },
 
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-        
-
-        let array = this.node.children;
-        for (let i = 0; i < array.length; i++) {
-            let node = array[i];
-            let collider = node.getComponent(cc.PhysicsPolygonCollider);
-            if (collider) {
-                let data = [];
-                for (let j = 0; j < collider.points.length; j++) {
-                    data[j] = [collider.points[j].x,collider.points[j].y]
-                }
-
-                console.log(JSON.stringify(data));
-                console.log([node.x,node.y]);
-
-
-            }
-
-        }
-
-
+        this.jointArray = [];
+        this.data = null;
     },
 
     start () {
 
     },
+
 
     // update (dt) {},
 });
