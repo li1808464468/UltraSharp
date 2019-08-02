@@ -36,7 +36,7 @@ cc.Class({
 
     initData: function (id) {
         this.levelId = id;
-        this.label.string = id;
+        this.label.string = id + 1;
     },
 
     onTouchBegan: function () {

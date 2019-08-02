@@ -42,7 +42,7 @@ cc.Class({
 
 
     createStar: function () {
-        let gameJs = this.gameNode.getComponent("game");
+        let gameJs = this.gameNode.getComponent("Game");
         if (gameJs.levelData.levelType === USGlobal.GameManager.LevelType.ClearStar) {
 
             let starCount = 3;

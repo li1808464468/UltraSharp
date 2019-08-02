@@ -31,7 +31,7 @@ cc.Class({
         let move1 = cc.moveBy(0.15,cc.v2(0,-cc.winSize.height));
         this.mainLayer.runAction(move1);
 
-        this.gameLayer.getComponent("game").endGame();
+        this.gameLayer.getComponent("Game").endGame();
         this.gameLayer.active = false;
         this.gameLayer.y = cc.winSize.height;
         let move2 = move1.clone();
@@ -39,7 +39,7 @@ cc.Class({
     },
 
     resumeGame: function () {
-        this.gameLayer.getComponent("game").resumeGame();
+        this.gameLayer.getComponent("Game").resumeGame();
     },
 
     // update (dt) {},

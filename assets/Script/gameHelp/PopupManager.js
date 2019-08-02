@@ -21,7 +21,7 @@ cc.Class({
 
         // this.node = this.popupNode;
         // cc.log("popupNode size = " + this.popupNode.width + this.popupNode.height);
-        this.node.setContentSize(cc.director.getWinSize());
+        this.node.setContentSize(cc.winSize);
         // cc.log("popupNode size = " + this.popupNode.width + this.popupNode.height);
 
 
@@ -54,7 +54,7 @@ cc.Class({
     playAnimation(type = 0) {
         cc.log("play Animation");
         if (type == 0) {
-            this.mainNode.y = -cc.director.getWinSize().height;
+            this.mainNode.y = -cc.winSize.height;
             let move1 = cc.moveTo(0.15,cc.v2(0,5));
             let move2 = cc.moveTo(0.1,cc.v2(0,-2));
             let move3 = cc.moveTo(0.1,cc.v2(0,0));

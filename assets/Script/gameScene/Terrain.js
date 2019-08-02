@@ -7,22 +7,29 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
-
-var GameManager = {
-    // 游戏中的默认弹性系数
-    gameRestitution: 0.3,
-    // 游戏中的默认摩擦力
-    gamefriction: 0.2,
+//地形类
+let PhysicsNode = require("PhysicsNode");
 
 
-    LevelType :{
-        ClearStar: 0,
+class Terrain extends PhysicsNode {
+    constructor(data) {
+        super(data)
+
+
+        if (!data.group) {
+            this.group = USGlobal.ConfigData.NodeGroup.Terrain;
+        }
+
+        if ((data.state !== undefined ) && data.state === USGlobal.ConfigData.RigidBodyType.Dynamic) {
+            this.body.type = cc.RigidBodyType.Dynamic;
+        } else {
+            this.body.type = cc.RigidBodyType.Static;
+        }
+
+
     }
 
+}
 
+module.exports = Terrain;
 
-
-
-
-};
-module.exports = GameManager;

@@ -25,9 +25,9 @@
     "REMOTE_SERVER_ROOT": "",
     "orientation": "portrait"
   },
-  "startScene": "8af910b1-6cdb-4871-96d6-0a8cb4e13153",
+  "startScene": "94e92dce-70ec-4265-8526-38ad83f222d9",
   "title": "UltraSharp",
-  "webOrientation": "auto",
+  "webOrientation": "landscape",
   "wechatgame": {
     "REMOTE_SERVER_ROOT": "",
     "appid": "wx6ac3f5090a6b99c5",

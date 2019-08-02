@@ -41,7 +41,7 @@ cc.Class({
     // 初始化关卡数据
     initLevelData() {
 
-        cc.loader.loadRes('data/levelData/level.json', function (err, object) {
+        cc.loader.loadRes('data/levelData/level', function (err, object) {
             if (err) {
                 console.log(err);
                 return;
@@ -58,7 +58,7 @@ cc.Class({
 
     // 初始化地形数据
     initTerainData() {
-        cc.loader.loadRes('data/levelData/terrainData.json', function (err, object) {
+        cc.loader.loadRes('data/levelData/terrainData', function (err, object) {
             if (err) {
                 console.log(err);
                 return;
@@ -75,7 +75,7 @@ cc.Class({
 
     // 初始化可切割数据
     initContentData() {
-        cc.loader.loadRes('data/levelData/contentData.json', function (err, object) {
+        cc.loader.loadRes('data/levelData/contentData', function (err, object) {
             if (err) {
                 console.log(err);
                 return;
@@ -92,7 +92,7 @@ cc.Class({
 
     // 初始化检测器
     initTriggerData() {
-        cc.loader.loadRes('data/levelData/triggerData.json', function (err, object) {
+        cc.loader.loadRes('data/levelData/triggerData', function (err, object) {
             if (err) {
                 console.log(err);
                 return;
@@ -108,7 +108,7 @@ cc.Class({
 
     // 初始化关节数据
     initJoinData() {
-        cc.loader.loadRes('data/levelData/joinData.json', function (err, object) {
+        cc.loader.loadRes('data/levelData/joinData', function (err, object) {
             if (err) {
                 console.log(err);
                 return;

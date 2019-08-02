@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.4419962322941417,
-      "y": 0.4419962322941417,
+      "x": 0.31690140845070425,
+      "y": 0.31690140845070425,
       "z": 1
     },
     "_quat": {
@@ -250,8 +250,8 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": -198,
-      "y": -335,
+      "x": 218,
+      "y": 170,
       "z": 0
     },
     "_scale": {
@@ -273,7 +273,7 @@
     "_skewY": 0,
     "_zIndex": 0,
     "groupIndex": 0,
-    "_id": "0cimHSCttEma6L1elKLZHV"
+    "_id": "01hzumHiZKGIKob1sqmJZH"
   },
   {
     "__type__": "cc.RigidBody",
@@ -297,7 +297,7 @@
     "_fixedRotation": false,
     "enabledContactListener": false,
     "bullet": false,
-    "_id": "a7a8xFKllEtoD3+rQwHvVy"
+    "_id": "dcoMu1eQ1FRqcOIfE5CQZE"
   },
   {
     "__type__": "cc.PhysicsPolygonCollider",
@@ -321,41 +321,26 @@
     "points": [
       {
         "__type__": "cc.Vec2",
-        "x": -25,
+        "x": -800,
         "y": 0
       },
       {
         "__type__": "cc.Vec2",
-        "x": -25,
-        "y": 133
+        "x": -800,
+        "y": 140
       },
       {
         "__type__": "cc.Vec2",
-        "x": 20,
-        "y": 133
+        "x": 800,
+        "y": 140
       },
       {
         "__type__": "cc.Vec2",
-        "x": 18,
-        "y": 49
-      },
-      {
-        "__type__": "cc.Vec2",
-        "x": 404,
-        "y": 49
-      },
-      {
-        "__type__": "cc.Vec2",
-        "x": 404,
-        "y": -3
-      },
-      {
-        "__type__": "cc.Vec2",
-        "x": 25,
+        "x": 800,
         "y": 0
       }
     ],
-    "_id": "d9BVoy0kJPs4523vkLYkWz"
+    "_id": "cduvVhxmlANZHcvb5yUn+v"
   },
   {
     "__type__": "cc.Canvas",

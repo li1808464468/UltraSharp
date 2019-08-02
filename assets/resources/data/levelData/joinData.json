@@ -1,16 +1,57 @@
-[
+ [
 	{
 		"id":0,
 		"type":0,
-		"color":[0,0,0],
-		"scale": [0.35,0.35],
-		"describe": "旋转节点"
+		"size": [8,8],
+		"joinType": 0,
+		"color":3,
+		"describe": "黑色旋转节点"
 	},
 	{
 		"id":1,
 		"type":0,
-		"color":[125,125,125],
-		"scale": [0.35,0.35],
-		"describe": "旋转节点"
+		"size": [8,8],
+		"joinType": 0,
+		"color":0,
+		"describe": "白色旋转节点"
+	},
+	{
+		"id":2,
+		"type":0,
+		"size": [8,8],
+		"joinType": 1,
+		"color":3,
+		"length": 24,
+		"endPosition": [0,240],
+		"describe": "黑色绳子节点"
+	},
+	{
+		"id":3,
+		"type":0,
+		"size": [8,8],
+		"joinType": 1,
+		"color":3,
+		"length": 26,
+		"endPosition": [-100,240],
+		"describe": "黑色绳子节点"
+	},
+	{
+		"id":4,
+		"type":0,
+		"size": [8,8],
+		"joinType": 0,
+		"color":0,
+		"describe": "大的白色旋转节点"
+	},
+	{
+		"id":5,
+		"type":0,
+		"size": [8,8],
+		"joinType": 2,
+		"color":3,
+		"length": 26,
+		"endConnectedAnchor": [-180,10],
+		"endPosition": [0,250],
+		"describe": "黑色绳子节点"
 	}
 ]

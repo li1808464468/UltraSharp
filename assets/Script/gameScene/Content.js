@@ -8,21 +8,29 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 
-var GameManager = {
-    // 游戏中的默认弹性系数
-    gameRestitution: 0.3,
-    // 游戏中的默认摩擦力
-    gamefriction: 0.2,
+let PhysicsNode = require("PhysicsNode");
 
+class Content extends PhysicsNode {
+    constructor(data) {
+        super(data);
 
-    LevelType :{
-        ClearStar: 0,
-    }
-
-
+        if (!data.group) {
+            this.group = USGlobal.ConfigData.NodeGroup.Content;
+        }
 
 
 
 
-};
-module.exports = GameManager;
+        if ((data.state !== undefined) && data.state === USGlobal.ConfigData.RigidBodyType.Static) {
+            this.body.type = cc.RigidBodyType.Static;
+        } else {
+            this.body.type = cc.RigidBodyType.Dynamic;
+        }
+
+    };
+
+
+
+}
+
+module.exports = Content;

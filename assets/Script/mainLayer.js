@@ -56,7 +56,7 @@ cc.Class({
         let move2 = move1.clone();
         // let move2 = cc.moveBy(15,cc.v2(0,cc.winSize.height * 0.2));
         this.gameLayer.runAction(move2);
-        this.gameLayer.getComponent("game").createLevelData(levelId);
+        this.gameLayer.getComponent("Game").createLevelData(levelId);
 
 
     },
