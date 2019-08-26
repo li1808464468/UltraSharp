@@ -497,9 +497,16 @@ cc.Class({
 
 
                     let data = newCollider.points.filter((p)=>{
-                        if (p.x > cc.winSize.width * 0.5 || p.x < cc.winSize.width * -0.5) {
+                        let worldPosition = newCollider.node.convertToWorldSpaceAR(p);
+                        if (worldPosition.x > cc.winSize.width  || worldPosition.x < 0 ) {
                             return p;
                         }
+
+                        if (worldPosition.y > cc.winSize.height || worldPosition.y < 0)
+                        {
+                            return p;
+                        }
+
                     });
 
                     if (data.length > 0) {

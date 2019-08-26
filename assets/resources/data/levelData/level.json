@@ -218,6 +218,17 @@
     "joinPosition": [[70,110]],
     "connectedAnchor": [[30,24]],
     "count": [1,2,3]
-  }
+  },
+  {
+    "levelId": 18,
+    "levelType": 0,
+    "contentId": [22,23],
+    "contentPosition": [[-189,180],[-80,232]],
+    "triggerId": [0],
+    "triggerPosition": [[0,0]],
+    "terrainId": [14],
+    "terrainPosition": [[-158, 180]],
+    "count": [1,2,3]
+   }
 
 ]
