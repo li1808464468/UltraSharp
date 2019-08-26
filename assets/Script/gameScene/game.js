@@ -115,6 +115,8 @@ cc.Class({
         this.colliderArray = [];
         this.allColliderArray = [];
         this.terrainArray = [];
+        // 可以绑定节点的刚体
+        this.jointTerrainArray = [];
         this.triggerArray = [];
         this.jointArray = [];
         this.contentArray = [];
@@ -144,21 +146,6 @@ cc.Class({
 
     createPhysicsCollider() {
 
-        let  terrainArray = this.levelData.terrainId ? this.levelData.terrainId : [];
-        let terrainIndex = 0;
-        terrainArray.forEach((id)=>{
-            let data = USGlobal.ConfigData.terainData.get(id);
-            let terrain = new Terrain(data);
-            this.node.addChild(terrain);
-            terrain.x = this.levelData.terrainPosition[terrainIndex][0];
-            terrain.y = this.levelData.terrainPosition[terrainIndex][1];
-            terrainIndex++;
-
-
-            this.terrainArray.push(terrain);
-            this.allColliderArray.push(terrain);
-        });
-
 
         let contentArray = this.levelData.contentId ? this.levelData.contentId : [];
         let contentIndex = 0;
@@ -177,6 +164,29 @@ cc.Class({
             this.contentArray.push(node);
             this.allColliderArray.push(node);
         });
+
+
+        let  terrainArray = this.levelData.terrainId ? this.levelData.terrainId : [];
+        let terrainIndex = 0;
+        terrainArray.forEach((id)=>{
+            let data = USGlobal.ConfigData.terainData.get(id);
+            let terrain = new Terrain(data);
+            this.node.addChild(terrain);
+            terrain.x = this.levelData.terrainPosition[terrainIndex][0];
+            terrain.y = this.levelData.terrainPosition[terrainIndex][1];
+            terrainIndex++;
+
+            if (data.joint) {
+                this.jointTerrainArray.push(terrain);
+            }
+
+
+            this.terrainArray.push(terrain);
+            this.allColliderArray.push(terrain);
+        });
+
+
+
 
 
         let triggerArray = this.levelData.triggerId ? this.levelData.triggerId : [];
@@ -344,7 +354,7 @@ cc.Class({
 
         var touchEnd = function (touch) {
             if (touch.getID() !== this.touchId) {
-                return;
+                return;touchEnd
             }
 
 
@@ -477,6 +487,7 @@ cc.Class({
                     bodyCollider.angularDamping = body.angularDamping;
                     bodyCollider.restitution = body.restitution;
                     bodyCollider.friction = body.friction;
+                    node.zIndex = body.node.zIndex;
 
                     let newCollider = node.addComponent(cc.PhysicsPolygonCollider);
                     newCollider.points = splitResult;
@@ -714,7 +725,11 @@ cc.Class({
 
         this.ctx.clear();
 
-        this.colliderArray.forEach((collider)=>{
+        let array = this.colliderArray.sort((collider1,collider2)=>{
+            return collider1.node.zIndex - collider2.node.zIndex;
+        });
+
+        array.forEach((collider)=>{
             let pointArray = collider.points;
             let id = 0;
             pointArray.forEach((point)=>{
@@ -886,7 +901,7 @@ cc.Class({
 
 
 
-        this.terrainArray.forEach((node)=>{
+        this.jointTerrainArray.forEach((node)=>{
             let collider = node.getComponent(cc.PhysicsPolygonCollider);
             if (collider) {
                 this.jointArray.forEach((jointNode)=>{

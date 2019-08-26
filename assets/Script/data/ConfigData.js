@@ -20,11 +20,7 @@ var ConfigData = {
     // 关节数据
     joinData: new Map(),
 
-
-
-
-    // content 可切割可碰撞
-    // content1 可切割不能和触发器碰撞
+    
     NodeGroup: {
         Default: "default",
         // 地形1
@@ -39,6 +35,8 @@ var ConfigData = {
         Terrain1: "terrain1",
         // 可触发检测器但是不能切割
         Content2: "content2",
+        // 地形3
+        Terrain2: "terrain2",
     },
 
 

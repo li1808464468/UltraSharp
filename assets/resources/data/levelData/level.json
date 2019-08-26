@@ -190,6 +190,34 @@
     "terrainId": [10,10],
     "terrainPosition": [[-760, 50],[760, 50]],
     "count": [2,3,4]
+  },
+  {
+    "levelId": 16,
+    "levelType": 0,
+    "contentId": [17,14,18,14,18,19,19,19,14],
+    "contentPosition": [[0, 60],[0,120],[-90,160],[-90,260],[90,190],[130,160],[0,280],[-90,300],[130,300]],
+    "triggerId": [4,4,4,4,4,4,4],
+    "triggerPosition": [[-150,-400],[-100,-400],[-50,-400],[0,-400],[50,-400],[100,-400],[150,-400]],
+    "terrainId": [12,12,12],
+    "terrainPosition": [[-600, 200],[0,500],[660,200]],
+    "joinId":[1,1],
+    "joinPosition": [[-180,60],[180,60]],
+    "connectedAnchor": [[-175,0],[175,0]],
+    "count": [1,2,3]
+  },
+  {
+    "levelId": 17,
+    "levelType": 0,
+    "contentId": [20,21],
+    "contentPosition": [[0, -73],[40,77]],
+    "triggerId": [4],
+    "triggerPosition": [[-145,-55]],
+    "terrainId": [13],
+    "terrainPosition": [[-200, -100]],
+    "joinId":[3],
+    "joinPosition": [[70,110]],
+    "connectedAnchor": [[30,24]],
+    "count": [1,2,3]
   }
 
 ]

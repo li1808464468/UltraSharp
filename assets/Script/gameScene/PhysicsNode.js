@@ -36,6 +36,9 @@ class PhysicsNode extends cc.Node {
             this.group = data.group;
         }
 
+        if (data.zIndex) {
+            this.zIndex = data.zIndex;
+        }
 
 
         if (data.type === USGlobal.ConfigData.TerrainType.Polygon) {

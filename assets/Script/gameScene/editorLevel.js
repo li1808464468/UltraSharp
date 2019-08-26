@@ -54,6 +54,7 @@ cc.Class({
         }
 
 
+
     },
 
     start () {

@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.31690140845070425,
-      "y": 0.31690140845070425,
+      "x": 0.4813807055970882,
+      "y": 0.4813807055970882,
       "z": 1
     },
     "_quat": {
@@ -52,7 +52,6 @@
       "z": 0,
       "w": 1
     },
-    "_zIndex": 0,
     "groupIndex": 0,
     "autoReleaseAssets": false,
     "_id": "8af910b1-6cdb-4871-96d6-0a8cb4e13153"
@@ -124,7 +123,6 @@
     },
     "_skewX": 0,
     "_skewY": 0,
-    "_zIndex": 0,
     "groupIndex": 0,
     "_id": "64PkZk8KBCB4PaGIo07MCZ"
   },
@@ -185,7 +183,6 @@
     },
     "_skewX": 0,
     "_skewY": 0,
-    "_zIndex": 0,
     "groupIndex": 0,
     "_id": "e3YAKpzLRNepf0k9JU5g1+"
   },
@@ -250,8 +247,8 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": 218,
-      "y": 170,
+      "x": 46,
+      "y": 48,
       "z": 0
     },
     "_scale": {
@@ -271,9 +268,8 @@
     },
     "_skewX": 0,
     "_skewY": 0,
-    "_zIndex": 0,
     "groupIndex": 0,
-    "_id": "01hzumHiZKGIKob1sqmJZH"
+    "_id": "3fpFYlP1lJu6IYxaDqoPzm"
   },
   {
     "__type__": "cc.RigidBody",
@@ -297,7 +293,8 @@
     "_fixedRotation": false,
     "enabledContactListener": false,
     "bullet": false,
-    "_id": "dcoMu1eQ1FRqcOIfE5CQZE"
+    "awakeOnLoad": true,
+    "_id": "97TTAN8R1BEb8swlpo7dwJ"
   },
   {
     "__type__": "cc.PhysicsPolygonCollider",
@@ -321,26 +318,36 @@
     "points": [
       {
         "__type__": "cc.Vec2",
-        "x": -800,
+        "x": 0,
         "y": 0
       },
       {
         "__type__": "cc.Vec2",
-        "x": -800,
-        "y": 140
+        "x": 0,
+        "y": 50
       },
       {
         "__type__": "cc.Vec2",
-        "x": 800,
-        "y": 140
+        "x": 150,
+        "y": 50
       },
       {
         "__type__": "cc.Vec2",
-        "x": 800,
+        "x": 150,
+        "y": -150
+      },
+      {
+        "__type__": "cc.Vec2",
+        "x": 98,
+        "y": -150
+      },
+      {
+        "__type__": "cc.Vec2",
+        "x": 98,
         "y": 0
       }
     ],
-    "_id": "cduvVhxmlANZHcvb5yUn+v"
+    "_id": "6aH7ApmxdJNYbclJJterKz"
   },
   {
     "__type__": "cc.Canvas",

@@ -56,6 +56,7 @@
 		"restitution": 0.25,
 		"state": 0,
 		"density": 0.1,
+		"joint": true,
 		"group": "terrain1",
 		"describe": "第10关杠杆"
 	},
@@ -92,6 +93,22 @@
 		"state": 0,
 		"density": 0.5,
 		"group": "terrain1",
+		"joint": true,
 		"describe": "第13关杠杆"
+	},
+	{
+		"id":12,
+		"type":1,
+		"color":3,
+		"points":[[-500,-162],[444,-162],[444,179],[-500,179]],
+		"group": "terrain2",
+		"describe": "地面"
+	},
+	{
+		"id":13,
+		"type":1,
+		"color":3,
+		"points":[[0,0],[0,80],[30,80],[30,26],[400,26],[400,0]],
+		"describe": "第18关地面"
 	}
 ]
