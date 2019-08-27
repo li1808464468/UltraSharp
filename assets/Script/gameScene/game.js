@@ -31,12 +31,6 @@ let GameState = cc.Enum({
     Failure:3,
 });
 
-
-
-
-
-
-
 cc.Class({
     extends: cc.Component,
 
@@ -826,7 +820,7 @@ cc.Class({
         });
 
 
-        if (this.triggerArray.length == 0) {
+        if (this.levelData.levelType === 0 &&  this.triggerArray.length == 0) {
             this.gameState = GameState.Succeed;
             this.popupGameOver();
         }
