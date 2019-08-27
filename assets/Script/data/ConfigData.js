@@ -70,10 +70,15 @@ var ConfigData = {
 
 
     ColorType: [
+        // 白
         cc.color(255,255,255),
+        // 浅蓝
         cc.color(29,155,204),
+        // 深黄
         cc.color(240,213,21),
+        // 黑
         cc.color(0,0,0),
+        // 黄
         cc.color(162,132,14)
     ],
 
