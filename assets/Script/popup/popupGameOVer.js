@@ -40,10 +40,14 @@ cc.Class({
         this.playAnimation();
     },
 
+    showFailureLayer: function () {
+        this.playAnimation();
+    },
+
 
     createStar: function () {
         let gameJs = this.gameNode.getComponent("Game");
-        if (gameJs.levelData.levelType === USGlobal.GameManager.LevelType.ClearStar) {
+        if (gameJs.levelData.levelType === USGlobal.ConfigData.LevelType.ClearStar) {
 
             let starCount = 3;
             for (let i = 0; i < gameJs.levelData.count.length; i++) {
@@ -61,10 +65,10 @@ cc.Class({
                     this.starNode[i].active = false;
                 }
             }
-
-
-
-
+        } else if (gameJs.levelData.levelType === USGlobal.ConfigData.LevelType.ClearContent) {
+            for (let i = 0; i < this.starNode.length; i++) {
+                this.starNode[i].active = true;
+            }
         }
     },
 

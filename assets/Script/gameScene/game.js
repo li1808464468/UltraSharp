@@ -40,6 +40,7 @@ cc.Class({
         debugGraphics: cc.Node,
         gameOverLayer: cc.Node,
         normalSprite: cc.SpriteFrame,
+        topUi: cc.Node,
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -114,12 +115,17 @@ cc.Class({
         this.triggerArray = [];
         this.jointArray = [];
         this.contentArray = [];
+        this.updateContentArray = [];
         this.gameState = GameState.Default;
         this.cutCount = 0;
         // 触发碰撞的检测器
         this.collisionArray = [];
         // 可以成功触发检测器的碰撞体
         this.contentCollisionArray = [];
+        // 可切割物体的面积
+        this.contentSumArea = 0;
+        // 减少的可切割物体的面积
+        this.contentSubArea = 0;
     },
    
    
@@ -135,6 +141,14 @@ cc.Class({
         this.levelId = id;
         this.levelData = USGlobal.ConfigData.levelData.get(id);
         this.upPosition = this.node.position;
+        if (this.levelData.levelType === USGlobal.ConfigData.LevelType.ClearContent) {
+            let topUi = this.topUi.getComponent("topUI");
+            topUi.clearCountNode.active = true;
+            topUi.setClearLabelFont(0,0,this.levelData);
+        } else {
+            this.topUi.getComponent("topUI").clearCountNode.active = false;
+        }
+
         this.createPhysicsCollider();
     },
 
@@ -145,6 +159,15 @@ cc.Class({
         let contentIndex = 0;
         contentArray.forEach((id)=>{
             let data = USGlobal.ConfigData.contentData.get(id);
+            let points = [];
+            data.points.forEach((data)=>{
+                let p =  {};
+                p.x = data[0];
+                p.y = data[1];
+                points.push(p);
+            });
+
+
             let node = new Content(data);
             this.node.addChild(node);
             node.x = this.levelData.contentPosition[contentIndex][0];
@@ -155,7 +178,17 @@ cc.Class({
                 this.contentCollisionArray.push(node);
             }
 
+            if (node.group !== USGlobal.ConfigData.NodeGroup.Content1)  {
+                this.updateContentArray.push(node);
+                this.contentSumArea += USGlobal.HelpManager.getPolygonArea(points);
+            }
+
+
             this.contentArray.push(node);
+
+
+
+
             this.allColliderArray.push(node);
         });
 
@@ -352,6 +385,9 @@ cc.Class({
             }
 
 
+
+
+
             this.touchId = -1;
             this.tiledLine.active = false;
             this.tiledLine.setContentSize(this.tiledLine.getContentSize().width,0);
@@ -364,6 +400,11 @@ cc.Class({
                 return;
             }
 
+            // 如果是关卡类型1 切割次数超过关卡要求次数跳过切割
+            if (this.levelData.levelType === USGlobal.ConfigData.LevelType.ClearContent && this.cutCount >= this.levelData.count)
+            {
+                return;
+            }
 
             this.r2.forEach(r => {
                 r.fraction = 1 - r.fraction;
@@ -372,7 +413,13 @@ cc.Class({
             let results = this.results;
             if (results.length > 1) {
                 this.cutCount++;
+                this.setTopUILabel();
             }
+
+
+
+
+
 
             let pairs = [];
             for (let i = 0; i < results.length; i++) {
@@ -511,6 +558,11 @@ cc.Class({
                     if (node.group === USGlobal.ConfigData.NodeGroup.Content || node.group === USGlobal.ConfigData.NodeGroup.Content2) {
                         this.contentCollisionArray.push(node);
                     }
+
+                    if (node.group !== USGlobal.ConfigData.NodeGroup.Content1) {
+                        this.updateContentArray.push(node);
+                    }
+
                     this.contentArray.push(node);
                 }
             }
@@ -692,14 +744,10 @@ cc.Class({
     },
 
     update (dt) {
-
-
-       this.updateAllPosition();
-       this.drawAllNode();
-       this.updateCollision();
-
-
-
+        this.updateAllPosition();
+        this.drawAllNode();
+        this.updateCollision();
+        this.updateContent();
     },
 
     // 进入游戏场景和退出游戏场景时，手动更新所有的物理组件的坐标
@@ -786,11 +834,26 @@ cc.Class({
         }
 
 
-
-
-
     },
 
+
+    updateContent () {
+        if (this.levelData.levelType !== USGlobal.ConfigData.LevelType.ClearContent) {
+            return;
+        }
+
+        for (let i = this.updateContentArray.length - 1; i >= 0 ; i--) {
+            let content = this.updateContentArray[i];
+            if (content.y <= -cc.winSize.height * 0.5 - 200) {
+                this.updateContentArray.splice(i,1);
+                let polygon = content.getComponent(cc.PhysicsPolygonCollider);
+                this.contentSubArea += USGlobal.HelpManager.getPolygonArea(polygon.points);
+                this.onBeginContact();
+                this.setTopUILabel();
+            }
+        }
+
+    },
 
 
     removeAllCollider: function () {
@@ -820,9 +883,16 @@ cc.Class({
         });
 
 
-        if (this.levelData.levelType === 0 &&  this.triggerArray.length == 0) {
+        if (this.levelData.levelType === USGlobal.ConfigData.LevelType.ClearStar &&  this.triggerArray.length == 0) {
             this.gameState = GameState.Succeed;
             this.popupGameOver();
+        } else if (this.levelData.levelType === USGlobal.ConfigData.LevelType.ClearContent)
+        {
+            if (this.updateContentArray.length === 0)
+            {
+                this.gameState = GameState.Succeed;
+                this.popupGameOver();
+            }
         }
 
     },
@@ -935,5 +1005,13 @@ cc.Class({
 
     },
 
+    setTopUILabel () {
+        if (this.levelData.levelType !== USGlobal.ConfigData.LevelType.ClearContent) {
+            return;
+        }
+
+        let topUi = this.topUi.getComponent("topUI");
+        topUi.setClearLabelFont(this.cutCount,Math.floor(this.contentSubArea / this.contentSumArea * 100),this.levelData);
+    },
 
 });

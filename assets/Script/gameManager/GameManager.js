@@ -15,9 +15,7 @@ var GameManager = {
     gamefriction: 0.2,
 
 
-    LevelType :{
-        ClearStar: 0,
-    }
+
 
 
 

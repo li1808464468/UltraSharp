@@ -79,9 +79,19 @@ var ConfigData = {
         // 黑
         cc.color(0,0,0),
         // 黄
-        cc.color(162,132,14)
+        cc.color(162,132,14),
+        // 青
+        cc.color(114,174,74),
+        // 橘色
+        cc.color(230,129,37),
+
     ],
 
+    // 关卡类型
+    LevelType :{
+        ClearStar: 0,
+        ClearContent: 1,
+    }
 
 
 };

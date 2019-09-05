@@ -15,6 +15,11 @@ cc.Class({
         gameLayer: cc.Node,
         mainLayer: cc.Node,
         closeButton: cc.Node,
+
+        clearCountNode: cc.Node,
+        clearCountLabel1: cc.Label,
+        clearCountLabel2: cc.Label,
+
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -41,6 +46,13 @@ cc.Class({
     resumeGame: function () {
         this.gameLayer.getComponent("Game").resumeGame();
     },
+
+    setClearLabelFont (count1,count2,levelData) {
+        this.clearCountLabel1.string = count1 + "/" + levelData.count;
+        this.clearCountLabel2.string = count2 + "/100%";
+
+    },
+
 
     // update (dt) {},
 });
